@@ -31,18 +31,21 @@ def extract_images(in_file: Path) -> None:
             tmp_img = tmp_img.rotate(-90, expand=True)
             tmp_img.save(img_out)
 
-def read_images() -> list[list]:
+def read_images() -> list[list[dict]]:
     import easyocr
     reader = easyocr.Reader(['en', 'de']) # this needs to run only once to load the model into memory
 
     res = []
     for img in TMP_OUT.glob("*"):
-        res += [reader.readtext(str(img))]
+        res += [reader.readtext(str(img), paragraph=True, output_format='dict')]
 
     return res
 
 def gen_csv(pages: list[list]) -> None:
-    pprint(pages)
+    for page in pages:
+        for line in page:
+            print(line)
+    # pprint(pages)
 
 def main() -> int:
     parser = AP.ArgumentParser('Doc To CSV')
@@ -54,7 +57,7 @@ def main() -> int:
 
     #extract_images(in_file)
     #pages = read_images()
-    pages = [json.loads((ROOT / 'data.json').read_text())]
+    pages = json.loads((ROOT / 'data.json').read_text())
     gen_csv(pages)
 
 
