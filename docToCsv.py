@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# import easyocr
+import easyocr
 # from pdf2image import convert_from_path
 import fitz
 from pathlib import Path
@@ -31,11 +31,17 @@ def main() -> int:
 
             img_out = tmp_out / f'{img[0]}.{img_data["ext"]}'
             img_out.write_bytes(img_data['image'])
-    return 0
-
 
     reader = easyocr.Reader(['en', 'de']) # this needs to run only once to load the model into memory
-    result = reader.readtext('')
+
+    for img in tmp_out.glob("*"):
+        print(img)
+        result = reader.readtext(img)
+        print(result)
+
+
+    return 0
+
     return 0
 
 if __name__ == '__main__':
