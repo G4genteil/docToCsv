@@ -36,11 +36,10 @@ def main() -> int:
 
     for img in tmp_out.glob("*"):
         print(img)
-        result = reader.readtext(img)
-        print(result)
+        result = reader.readtext(str(img))
+        for i in result:
+            print(i)
 
-
-    return 0
 
     return 0
 
