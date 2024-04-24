@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import easyocr
-from pdf2image import convert_from_path
+# import easyocr
+# from pdf2image import convert_from_path
+import fitz
 from pathlib import Path
 import argparse as AP
 import shutil
@@ -23,7 +24,11 @@ def main() -> int:
 
     tmp_out.mkdir(parents=True)
 
-    convert_from_path(in_file, output_folder=tmp_out, fmt='png')
+    pdf = fitz.open(in_file)
+    for page in pdf:
+        for img in page.get_images():
+            print(img)
+    # convert_from_path(in_file, output_folder=tmp_out, fmt='png')
     return 0
 
 
