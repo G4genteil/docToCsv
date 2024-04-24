@@ -27,8 +27,10 @@ def main() -> int:
     pdf = fitz.open(in_file)
     for page in pdf:
         for img in page.get_images():
-            print(img)
-    # convert_from_path(in_file, output_folder=tmp_out, fmt='png')
+            img_data = pdf.extract_image(img[0])
+
+            img_out = tmp_out / f'{img[0]}.{img_data["ext"]}'
+            img_out.write_bytes(img_data['image'])
     return 0
 
 
