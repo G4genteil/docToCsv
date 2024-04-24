@@ -6,6 +6,7 @@ import fitz
 from pathlib import Path
 import argparse as AP
 import shutil
+from PIL import Image
 
 ROOT = Path(__file__).parent.resolve()
 
@@ -31,6 +32,10 @@ def main() -> int:
 
             img_out = tmp_out / f'{img[0]}.{img_data["ext"]}'
             img_out.write_bytes(img_data['image'])
+
+            tmp_img = Image.open(img_out)
+            tmp_img = tmp_img.rotate(-90, expand=True)
+            tmp_img.save(img_out)
 
     reader = easyocr.Reader(['en', 'de']) # this needs to run only once to load the model into memory
 
