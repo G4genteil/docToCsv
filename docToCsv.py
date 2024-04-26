@@ -65,6 +65,7 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         mat_bez_pos = None
         anz_ret_pos = None
         ret_grund_pos = None
+        retouren_nr_pos = None
         anmelde_datum = None
         anmeldeDatumGesehen = False
         ret_nr = None
@@ -91,6 +92,8 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
                 anz_ret_pos = coords
             if 'Ret.' == text:
                 ret_grund_pos = coords
+            if 'Retouren-Nr.' in text:
+                retouren_nr_pos = coords
 
             # Anmeldedatum
             if 'Anmeldedatum:' == text:
@@ -141,6 +144,7 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         print(f'mat_nr:            {mat_nr_pos}')
         print(f'mat_bez:           {mat_bez_pos}')
         print(f'anz_ret:           {anz_ret_pos}')
+        print(f'retouren_nr_pos:   {retouren_nr_pos}')
         print(f'ret_grund:         {ret_grund_pos}')
         print(f'anmelde_datum:     {anmelde_datum}')
         print(f'ret_nr:            {ret_nr}')
@@ -152,14 +156,29 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
 
 
         abholaddresse_spalte = [x for x in page if abs(x['coords'][0] - abholaddresse_pos[0]) < 16]
+        abholaddresse_spalte = [x for x in abholaddresse_spalte if x['coords'][1] < retouren_nr_pos[1]]
         abholaddresse_spalte = sorted(abholaddresse_spalte, key=lambda x: x['coords'][1])
 
         # Kundennummer ist immer direkt unter der UEberschrift
         kundennummer = int(abholaddresse_spalte[1]['text'])
+        # Kundenbezeichung ist direkt drunter
         kundenbez = abholaddresse_spalte[2]['text']
+
+        # Postleizahl ist das letzte element
+        plz_el = abholaddresse_spalte[-1]
+        plz_txt: str = plz_el['text'].strip()
+        ort: str = None
+        if ' ' in plz_txt:
+            ort = plz_txt.split(' ')[-1].strip()
+        else:
+            ort = page[page.index(plz_el) + 1]['text']
 
         print(f'kundennummer:      {kundennummer}')
         print(f'kundenbez:         {kundenbez}')
+        print(f'ort:               {ort}')
+
+        for i in abholaddresse_spalte:
+            print(i)
 
 
 def main() -> int:
