@@ -37,15 +37,55 @@ def read_images() -> list[list[dict]]:
 
     res = []
     for img in TMP_OUT.glob("*"):
-        res += [reader.readtext(str(img), paragraph=False, output_format='dict')]
+        res += [reader.readtext(str(img), paragraph=False)]
 
     return res
 
-def gen_csv(pages: list[list]) -> None:
+def convert_data(pages: list[list[list]]) -> list[list[dict[str]]]:
+    res = []
     for page in pages:
+        page_conv = []
         for line in page:
-            print(json.dumps(line) + ',')
-    # pprint(pages)
+            data = {
+                'coords': [int(x) for x in line[0][0]],
+                'text': line[1],
+            }
+            page_conv += [data]
+            #print(json.dumps(data) + ',')
+
+        res += [page_conv]
+
+    return res
+
+def gen_csv(pages: list[list[dict[str]]]) -> None:
+    for page in pages:
+
+        abholaddresse_pos = None
+        mat_nr = None
+        mat_bez = None
+        anz_ret = None
+        ret_grund = None
+
+        for line in page:
+            text: str = line['text']
+            coords: list[int] = line['coords']
+
+            if 'Abholadresse' in text:
+                abholaddresse_pos = coords
+            if 'Material-Nr' in text:
+                mat_nr = coords
+            if 'Material-Bezeichnung' in text:
+                mat_bez = coords
+            if 'Retourengrund' in text:
+                anz_ret = coords
+            if 'Ret.' == text:
+                ret_grund = coords
+
+        print(f'abholaddresse_pos: {abholaddresse_pos}')
+        print(f'mat_nr:            {mat_nr}')
+        print(f'mat_bez:           {mat_bez}')
+        print(f'anz_ret:           {anz_ret}')
+        print(f'ret_grund:         {ret_grund}')
 
 def main() -> int:
     parser = AP.ArgumentParser('Doc To CSV')
@@ -57,6 +97,7 @@ def main() -> int:
 
     #extract_images(in_file)
     #pages = read_images()
+    #pages = convert_data(pages)
     pages = json.loads((ROOT / 'data.json').read_text())
     gen_csv(pages)
 
