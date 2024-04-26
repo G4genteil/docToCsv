@@ -112,6 +112,14 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         print(f'ret_nr:            {ret_nr}')
 
 
+        abholaddresse_spalte = [x for x in page if abs(x['coords'][0] - abholaddresse_pos[0]) < 16]
+        abholaddresse_spalte = sorted(abholaddresse_spalte, key=lambda x: x['coords'][1])
+
+        # Kundennummer ist immer direkt unter der UEberschrift
+        kundennummer = int(abholaddresse_spalte[1]['text'])
+
+        print(f'kundennummer:      {kundennummer}')
+
 
 def main() -> int:
     parser = AP.ArgumentParser('Doc To CSV')
