@@ -177,8 +177,26 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         print(f'kundenbez:         {kundenbez}')
         print(f'ort:               {ort}')
 
-        for i in abholaddresse_spalte:
-            print(i)
+        # Parse Tabelle
+        tabelle = [x for x in page if x['coords'][1] > (mat_nr_pos[1] + 16)]
+        tabelle_zeilen = []
+
+        curr_y = tabelle[0]['coords'][1]
+        curr_zeile = []
+        for i in tabelle:
+            if abs(curr_y - i['coords'][1]) < 16:
+                curr_zeile += [i]
+            else:
+                tabelle_zeilen += [curr_zeile]
+                curr_zeile = [i]
+                curr_y = i['coords'][1]
+
+        if curr_zeile:
+            tabelle_zeilen += [curr_zeile]
+
+        pprint(tabelle_zeilen)
+        #for i in tabelle:
+        #    print(i)
 
 
 def main() -> int:
