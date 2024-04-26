@@ -88,13 +88,15 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
             elif anmeldeDatumGesehen:   
                 anmelde_datum = text
                 anmeldeDatumGesehen = False
+            elif 'Anmeldedatum:' in text:
+                anmelde_datum = text.split(': ')[1].strip()
 
         print(f'abholaddresse_pos: {abholaddresse_pos}')
         print(f'mat_nr:            {mat_nr}')
         print(f'mat_bez:           {mat_bez}')
         print(f'anz_ret:           {anz_ret}')
         print(f'ret_grund:         {ret_grund}')
-        print(f'anmelde_datum:         {anmelde_datum}')
+        print(f'anmelde_datum:     {anmelde_datum}')
 
 
 def main() -> int:
