@@ -71,6 +71,10 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         retourenNummerGesehen = False
         versandTag = None
         versandTagGesehen = False;
+        lieferTour = None;
+        lieferTourGesehen = False;
+        abholTour = None;
+        abholTourGesehen = False;
 
 
         for line in page:
@@ -115,6 +119,24 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
             elif 'Lieferschein:' in text:
                 versandTag = text.split('vom ')[1].strip()
 
+            # Liefertour
+            if 'Auslief.-tour:' == text:
+                lieferTourGesehen = True
+            elif lieferTourGesehen:
+                lieferTour = text
+                lieferTourGesehen = False
+            elif 'Auslief.-tour:' in text:
+                lieferTour = text
+
+            # Abholtour
+            if 'Abholtour:' == text:
+                abholTourGesehen = True
+            elif abholTourGesehen:
+                abholTour = text
+                abholTourGesehen = False
+            elif 'Abholtour:' in text:
+                abholTour = text
+
         print(f'abholaddresse_pos: {abholaddresse_pos}')
         print(f'mat_nr:            {mat_nr_pos}')
         print(f'mat_bez:           {mat_bez_pos}')
@@ -123,6 +145,10 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         print(f'anmelde_datum:     {anmelde_datum}')
         print(f'ret_nr:            {ret_nr}')
         print(f'versandTag:        {versandTag}')
+        print(f'liefertour:        {lieferTour}')
+        print(f'abholtour:         {abholTour}')
+
+
 
 
         abholaddresse_spalte = [x for x in page if abs(x['coords'][0] - abholaddresse_pos[0]) < 16]
