@@ -61,10 +61,10 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
     for page in pages:
 
         abholaddresse_pos = None
-        mat_nr = None
-        mat_bez = None
-        anz_ret = None
-        ret_grund = None
+        mat_nr_pos = None
+        mat_bez_pos = None
+        anz_ret_pos = None
+        ret_grund_pos = None
         anmelde_datum = None
         anmeldeDatumGesehen = False
         ret_nr = None
@@ -80,13 +80,13 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
             if 'Abholadresse' in text:
                 abholaddresse_pos = coords
             if 'Material-Nr' in text:
-                mat_nr = coords
+                mat_nr_pos = coords
             if 'Material-Bezeichnung' in text:
-                mat_bez = coords
+                mat_bez_pos = coords
             if 'Retourengrund' in text:
-                anz_ret = coords
+                anz_ret_pos = coords
             if 'Ret.' == text:
-                ret_grund = coords
+                ret_grund_pos = coords
 
             # Anmeldedatum
             if 'Anmeldedatum:' == text:
@@ -116,10 +116,10 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
                 versandTag = text.split('vom ')[1].strip()
 
         print(f'abholaddresse_pos: {abholaddresse_pos}')
-        print(f'mat_nr:            {mat_nr}')
-        print(f'mat_bez:           {mat_bez}')
-        print(f'anz_ret:           {anz_ret}')
-        print(f'ret_grund:         {ret_grund}')
+        print(f'mat_nr:            {mat_nr_pos}')
+        print(f'mat_bez:           {mat_bez_pos}')
+        print(f'anz_ret:           {anz_ret_pos}')
+        print(f'ret_grund:         {ret_grund_pos}')
         print(f'anmelde_datum:     {anmelde_datum}')
         print(f'ret_nr:            {ret_nr}')
         print(f'versandTag:        {versandTag}')
