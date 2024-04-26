@@ -1,0 +1,29 @@
+[
+  [
+    {"boxes": [[973, 292], [1505, 292], [1505, 392], [973, 392]], "text": "Retourenauftrag"},
+    {"boxes": [[2857, 345], [3299, 345], [3299, 464], [2857, 464]], "text": "~nn SAINT-GOBAIN"},
+    {"boxes": [[216, 499], [601, 499], [601, 856], [216, 856]], "text": "Abholadresse: 0004989863 Carglass GmbH 885 Mainzer Landstr. 631 65933 Frankfurt"},
+    {"boxes": [[1111, 500], [1498, 500], [1498, 856], [1111, 856]], "text": "Lieferadresse: 0004989863 Carglass GmbH 885 Mainzer Landstr. 631 65933 Frankfurt"},
+    {"boxes": [[1933, 498], [2305, 498], [2305, 680], [1933, 680]], "text": "Rechnungsadresse: 0004989863 Carglass GmbH"},
+    {"boxes": [[2674, 498], [3319, 498], [3319, 681], [2674, 681]], "text": "ServiceHotline: 02273 6084900 Fax: 03421 721122 Service sekurit-service@saint-goba"},
+    {"boxes": [[1935, 751], [2320, 751], [2320, 856], [1935, 856]], "text": "Mainzer Landstr. 631 65933 Frankfurt"},
+    {"boxes": [[2676, 751], [3235, 751], [3235, 856], [2676, 856]], "text": "Anmeldedatum: 21.02.2024 Anmeldezeit: 15:14.24.887"},
+    {"boxes": [[216, 906], [747, 906], [747, 962], [216, 962]], "text": "Retouren-Nr.: 604832"},
+    {"boxes": [[1934, 911], [2187, 911], [2187, 959], [1934, 959]], "text": "Kontaktdaten"},
+    {"boxes": [[217, 1001], [1017, 1001], [1017, 1044], [217, 1044]], "text": "Lieferschein: 8136205972 vom 07.02.2024"},
+    {"boxes": [[1114, 1001], [1632, 1001], [1632, 1240], [1114, 1240]], "text": "Kd.-Bestell-Nr.: 21488724 Kd.-Referenz-Nr:: Abholtour: KA 40 Abholung durch: Rick"},
+    {"boxes": [[1938, 1001], [2321, 1001], [2321, 1171], [1938, 1171]], "text": "E-Mail: SC885@carglass.de Fax:"},
+    {"boxes": [[2673, 1001], [3304, 1001], [3304, 1237], [2673, 1237]], "text": "Abholendes Werk: Saint-Gobain Autover Deutschland Am Mantel 8 76646 Bruchsal"},
+    {"boxes": [[216, 1123], [849, 1123], [849, 1247], [216, 1247]], "text": "Auslief.-tour: NSE Ausgel. durch: Night Star Express"},
+    {"boxes": [[1495, 1347], [1586, 1347], [1586, 1450], [1495, 1450]], "text": "Anz Ret."},
+    {"boxes": [[2204, 1349], [2791, 1349], [2791, 1460], [2204, 1460]], "text": "Anz. Akzept. Eing: Verursacher Verurs."},
+    {"boxes": [[2867, 1350], [2972, 1350], [2972, 1450], [2867, 1450]], "text": "Nach bea."},
+    {"boxes": [[3036, 1350], [3098, 1350], [3098, 1450], [3036, 1450]], "text": "G art"},
+    {"boxes": [[219, 1403], [643, 1403], [643, 1451], [219, 1451]], "text": "DOT-Nr: Material-Nr."},
+    {"boxes": [[816, 1397], [1259, 1397], [1259, 1458], [816, 1458]], "text": "Material-Bezeichnung"},
+    {"boxes": [[1639, 1402], [1943, 1402], [1943, 1534], [1639, 1534]], "text": "Retourengrund 062 Rückgabe"},
+    {"boxes": [[3191, 1405], [3314, 1405], [3314, 1453], [3191, 1453]], "text": "Gutsc"},
+    {"boxes": [[401, 1480], [629, 1480], [629, 1529], [401, 1529]], "text": "1003200203"},
+    {"boxes": [[699, 1480], [1338, 1480], [1338, 1529], [699, 1529]], "text": "BMW 1 SERI2 SER 11-21 WS GN"}
+  ]
+]

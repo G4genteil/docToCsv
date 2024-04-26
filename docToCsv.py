@@ -33,18 +33,18 @@ def extract_images(in_file: Path) -> None:
 
 def read_images() -> list[list[dict]]:
     import easyocr
-    reader = easyocr.Reader(['en', 'de']) # this needs to run only once to load the model into memory
+    reader = easyocr.Reader(['de', 'en']) # this needs to run only once to load the model into memory
 
     res = []
     for img in TMP_OUT.glob("*"):
-        res += [reader.readtext(str(img), paragraph=True, output_format='dict')]
+        res += [reader.readtext(str(img), paragraph=False, output_format='dict')]
 
     return res
 
 def gen_csv(pages: list[list]) -> None:
     for page in pages:
         for line in page:
-            print(line)
+            print(json.dumps(line) + ',')
     # pprint(pages)
 
 def main() -> int:
