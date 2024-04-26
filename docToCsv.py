@@ -67,6 +67,9 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         ret_grund = None
         anmelde_datum = None
         anmeldeDatumGesehen = False
+        ret_nr = None
+        retourenNummerGesehen = False
+
 
 
         for line in page:
@@ -83,13 +86,22 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
                 anz_ret = coords
             if 'Ret.' == text:
                 ret_grund = coords
+
             if 'Anmeldedatum:' == text:
                 anmeldeDatumGesehen = True
-            elif anmeldeDatumGesehen:   
+            elif anmeldeDatumGesehen:
                 anmelde_datum = text
                 anmeldeDatumGesehen = False
             elif 'Anmeldedatum:' in text:
                 anmelde_datum = text.split(': ')[1].strip()
+
+            if 'Retouren-Nr.:' == text:
+                retourenNummerGesehen = True
+            elif retourenNummerGesehen:
+                ret_nr = text
+                retourenNummerGesehen = False
+            elif 'Retouren-Nr.:' in text:
+                ret_nr = text.split(': ')[1].strip()
 
         print(f'abholaddresse_pos: {abholaddresse_pos}')
         print(f'mat_nr:            {mat_nr}')
@@ -97,6 +109,8 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         print(f'anz_ret:           {anz_ret}')
         print(f'ret_grund:         {ret_grund}')
         print(f'anmelde_datum:     {anmelde_datum}')
+        print(f'ret_nr:            {ret_nr}')
+
 
 
 def main() -> int:
