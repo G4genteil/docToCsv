@@ -7,6 +7,7 @@ import argparse as AP
 import shutil
 from PIL import Image
 import json
+import io
 
 from pprint import pprint
 
@@ -24,12 +25,10 @@ def extract_images(in_file: Path) -> None:
         for img in page.get_images():
             img_data = pdf.extract_image(img[0])
 
-            img_out = TMP_OUT / f'{img[0]}.{img_data["ext"]}'
-            img_out.write_bytes(img_data['image'])
-
-            tmp_img = Image.open(img_out)
+            tmp_img = Image.open(io.BytesIO(img_data['image']))
             tmp_img = tmp_img.rotate(-90, expand=True)
-            tmp_img.save(img_out)
+            tmp_img = tmp_img.resize((tmp_img.width * 2, tmp_img.height * 2))
+            tmp_img.save(TMP_OUT / f'{img[0]}.png')
 
 def read_images() -> list[list[dict]]:
     import easyocr
@@ -37,7 +36,7 @@ def read_images() -> list[list[dict]]:
 
     res = []
     for img in TMP_OUT.glob("*"):
-        res += [reader.readtext(str(img), paragraph=False)]
+        res += [reader.readtext(str(img), paragraph=False, canvas_size=5120)]
 
     return res
 
@@ -207,10 +206,11 @@ def main() -> int:
 
     in_file: Path = args.input
 
-    #extract_images(in_file)
-    #pages = read_images()
-    #pages = convert_data(pages)
-    pages = json.loads((ROOT / 'data.json').read_text())
+    extract_images(in_file)
+    # return 0
+    pages = read_images()
+    pages = convert_data(pages)
+    #pages = json.loads((ROOT / 'data.json').read_text())
     gen_csv(pages)
 
 
