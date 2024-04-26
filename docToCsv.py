@@ -130,8 +130,10 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
 
         # Kundennummer ist immer direkt unter der UEberschrift
         kundennummer = int(abholaddresse_spalte[1]['text'])
+        kundenbez = abholaddresse_spalte[2]['text']
 
         print(f'kundennummer:      {kundennummer}')
+        print(f'kundenbez:         {kundenbez}')
 
 
 def main() -> int:
