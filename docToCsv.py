@@ -65,6 +65,9 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         mat_bez = None
         anz_ret = None
         ret_grund = None
+        anmelde_datum = None
+        anmeldeDatumGesehen = False
+
 
         for line in page:
             text: str = line['text']
@@ -80,12 +83,19 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
                 anz_ret = coords
             if 'Ret.' == text:
                 ret_grund = coords
+            if 'Anmeldedatum:' == text:
+                anmeldeDatumGesehen = True
+            elif anmeldeDatumGesehen:   
+                anmelde_datum = text
+                anmeldeDatumGesehen = False
 
         print(f'abholaddresse_pos: {abholaddresse_pos}')
         print(f'mat_nr:            {mat_nr}')
         print(f'mat_bez:           {mat_bez}')
         print(f'anz_ret:           {anz_ret}')
         print(f'ret_grund:         {ret_grund}')
+        print(f'anmelde_datum:         {anmelde_datum}')
+
 
 def main() -> int:
     parser = AP.ArgumentParser('Doc To CSV')
