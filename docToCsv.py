@@ -27,16 +27,15 @@ def extract_images(in_file: Path) -> None:
 
             tmp_img = Image.open(io.BytesIO(img_data['image']))
             tmp_img = tmp_img.rotate(-90, expand=True)
-            tmp_img = tmp_img.resize((tmp_img.width * 2, tmp_img.height * 2))
             tmp_img.save(TMP_OUT / f'{img[0]}.png')
 
 def read_images() -> list[list[dict]]:
     import easyocr
-    reader = easyocr.Reader(['de', 'en']) # this needs to run only once to load the model into memory
+    reader = easyocr.Reader(['de']) # this needs to run only once to load the model into memory
 
     res = []
     for img in TMP_OUT.glob("*"):
-        res += [reader.readtext(str(img), paragraph=False, canvas_size=5120)]
+        res += [reader.readtext(str(img), paragraph=False, canvas_size=3200)]
 
     return res
 
@@ -206,11 +205,10 @@ def main() -> int:
 
     in_file: Path = args.input
 
-    extract_images(in_file)
-    # return 0
-    pages = read_images()
-    pages = convert_data(pages)
-    #pages = json.loads((ROOT / 'data.json').read_text())
+    #extract_images(in_file)
+    #pages = read_images()
+    #pages = convert_data(pages)
+    pages = json.loads((ROOT / 'data.json').read_text())
     gen_csv(pages)
 
 
