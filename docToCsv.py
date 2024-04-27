@@ -18,7 +18,7 @@ global_file_counter = 0
 
 from pprint import pprint
 
-def extract_images(in_file: Path) -> None:
+def extract_images(in_file: Path, rotate: int) -> None:
     print(f'Extrahiere Bilder aus PDF: {in_file}')
     global global_file_counter
 
@@ -29,7 +29,7 @@ def extract_images(in_file: Path) -> None:
 
             tmp_img = Image.open(io.BytesIO(img_data['image']))
             tmp_img = tmp_img.convert('L')
-            tmp_img = tmp_img.rotate(-90, expand=True)
+            tmp_img = tmp_img.rotate(rotate, expand=True)
             tmp_img.save(TMP_OUT / f'{global_file_counter}.png')
             global_file_counter += 1
 
@@ -273,11 +273,16 @@ def main() -> int:
     parser = GooeyParser(description="PDF2Excel")
     parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei', widget="FileSaver")
     parser.add_argument('input', type=Path, nargs="+", help='Pfad zur input PDF Datei', widget="MultiFileChooser")
+    parser.add_argument('--rotate', '-r', type=int, default=-90, help='Winkel um den die Bilder rotiert werden sollen')
+    parser.add_argument('--only-extract', action='store_true', help='Nur die Bilder extrahieren, aber keine Tabelle generieren')
 
     args = parser.parse_args()
 
     in_file_list: list[Path] = args.input
     out_file: Path = args.output
+    rotate: int = args.rotate
+    only_extract: bool = args.only_extract
+
     if not out_file.name.endswith('.xlsx'):
         out_file = out_file.with_suffix('.xlsx')
 
@@ -287,7 +292,11 @@ def main() -> int:
     TMP_OUT.mkdir(parents=True)
 
     for file in in_file_list:
-        extract_images(file)
+        extract_images(file, rotate)
+
+    if only_extract:
+        print('Beende mich fruehzeitig!')
+        return 0
 
     pages = read_images()
     pages = convert_data(pages)
