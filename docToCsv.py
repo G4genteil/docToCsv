@@ -88,9 +88,9 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
             if 'Material-Bezeichnung' in text:
                 mat_bez_pos = coords
             if 'Retourengrund' in text:
-                anz_ret_pos = coords
-            if 'Ret.' == text:
                 ret_grund_pos = coords
+            if 'Ret.' == text:
+                anz_ret_pos = coords
             if 'Retouren-Nr.' in text:
                 retouren_nr_pos = coords
 
@@ -178,7 +178,7 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
 
         # Parse Tabelle
         tabelle = [x for x in page if x['coords'][1] > (mat_nr_pos[1] + 16)]
-        tabelle_zeilen = []
+        tabelle_zeilen: list[list[dict[str]]] = []
 
         curr_y = tabelle[0]['coords'][1]
         curr_zeile = []
@@ -193,9 +193,44 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
         if curr_zeile:
             tabelle_zeilen += [curr_zeile]
 
-        pprint(tabelle_zeilen)
-        #for i in tabelle:
-        #    print(i)
+        # Tabelle verwenden
+        for line in tabelle_zeilen:
+            matnummer = None
+            retourengrund = None
+            mat_bez = None
+            anz_ret = None
+
+            mat_bez_best = 999999
+            anz_ret_best = 999999
+
+            for entry in list(line):
+                text: str = entry['text']
+                coords: list[int] = entry['coords']
+
+                if abs(coords[0] - mat_nr_pos[0]) < 16:
+                    matnummer = text
+                    line.remove(entry)
+                if abs(coords[0] - ret_grund_pos[0]) < 16:
+                    retourengrund = text
+                    line.remove(entry)
+
+            for entry in line:
+                text: str = entry['text']
+                coords: list[int] = entry['coords']
+
+                dist_mat_bez = abs(coords[0] - mat_bez_pos[0])
+                dist_anz_ret = abs(coords[0] - anz_ret_pos[0])
+                if dist_mat_bez < mat_bez_best:
+                    mat_bez = text
+                    mat_bez_best = dist_mat_bez
+                if dist_anz_ret < anz_ret_best:
+                    anz_ret = text
+                    anz_ret_best = dist_anz_ret
+
+            print(f' - matnummer:      {matnummer}')
+            print(f' - retourengrund:  {retourengrund}')
+            print(f' - mat. bez.:      {mat_bez} -- [{mat_bez_best}]')
+            print(f' - anzahl ret.:    {anz_ret} -- [{anz_ret_best}]')
 
 
 def main() -> int:
