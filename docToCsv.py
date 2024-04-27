@@ -8,9 +8,7 @@ import shutil
 from PIL import Image
 import json
 import io
-import csv
-
-from pprint import pprint
+import xlsxwriter
 
 ROOT = Path(__file__).parent.resolve()
 TMP_OUT = ROOT / 'tmp'
@@ -57,7 +55,8 @@ def convert_data(pages: list[list[list]]) -> list[list[dict[str]]]:
 
     return res
 
-def gen_csv(pages: list[list[dict[str]]], writer) -> None:
+def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
+    curr_row = 1
     for page in pages:
 
         abholaddresse_pos = None
@@ -233,7 +232,9 @@ def gen_csv(pages: list[list[dict[str]]], writer) -> None:
             print(f' - mat. bez.:      {mat_bez} -- [{mat_bez_best}]')
             print(f' - anzahl ret.:    {anz_ret} -- [{anz_ret_best}]')
 
-            writer.writerow([ret_nr, anmelde_datum, versandTag, mat_bez, anz_ret, retourengrund, kundennummer, kundenbez, ort, lieferTour, abholTour])
+            # writer.writerow([ret_nr, anmelde_datum, versandTag, mat_bez, anz_ret, retourengrund, kundennummer, kundenbez, ort, lieferTour, abholTour])
+            worksheet.write_row(curr_row, 0, [ret_nr, anmelde_datum, versandTag, mat_bez, anz_ret, retourengrund, kundennummer, kundenbez, ort, lieferTour, abholTour])
+            curr_row += 1
 
 
 def main() -> int:
@@ -251,10 +252,12 @@ def main() -> int:
     #pages = convert_data(pages)
     pages = json.loads((ROOT / 'data.json').read_text())
 
-    with open(out_file, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(["Retouren Nr.", "Anmeldung Datum", "Versandtag", "Kurzbezeichnung", "Anzahl Retouren", "Retourengrund", "Kunde Nr.", "Name", "Ort", "Liefertour", "Abholtour"])
-        gen_csv(pages, writer)
+    workbook = xlsxwriter.Workbook(str(out_file))
+    worksheet = workbook.add_worksheet()
+
+    worksheet.write_row(0, 0, ["Retouren Nr.", "Anmeldung Datum", "Versandtag", "Kurzbezeichnung", "Anzahl Retouren", "Retourengrund", "Kunde Nr.", "Name", "Ort", "Liefertour", "Abholtour"])
+    gen_csv(pages, worksheet)
+    workbook.close()
 
 
 if __name__ == '__main__':
