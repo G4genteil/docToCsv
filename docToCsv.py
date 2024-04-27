@@ -255,6 +255,7 @@ def main() -> int:
     workbook = xlsxwriter.Workbook(str(out_file))
     worksheet = workbook.add_worksheet()
 
+    worksheet.set_column(0, 10, 20)
     worksheet.write_row(0, 0, ["Retouren Nr.", "Anmeldung Datum", "Versandtag", "Kurzbezeichnung", "Anzahl Retouren", "Retourengrund", "Kunde Nr.", "Name", "Ort", "Liefertour", "Abholtour"])
     gen_csv(pages, worksheet)
     workbook.close()
