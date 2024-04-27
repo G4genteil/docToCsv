@@ -9,6 +9,7 @@ from PIL import Image
 import json
 import io
 import xlsxwriter
+from gooey import Gooey, GooeyParser
 
 ROOT = Path(__file__).parent.resolve()
 TMP_OUT = ROOT / 'tmp'
@@ -236,11 +237,11 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
             worksheet.write_row(curr_row, 0, [ret_nr, anmelde_datum, versandTag, mat_bez, anz_ret, retourengrund, kundennummer, kundenbez, ort, lieferTour, abholTour])
             curr_row += 1
 
-
+@Gooey
 def main() -> int:
-    parser = AP.ArgumentParser('Doc To CSV')
-    parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei')
-    parser.add_argument('input', type=Path, help='Pfad zur input PDF Datei')
+    parser = GooeyParser(description="My Cool GUI Program!")
+    parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei', widget="FileChooser")
+    parser.add_argument('input', type=Path, help='Pfad zur input PDF Datei', widget="FileChooser")
 
     args = parser.parse_args()
 
