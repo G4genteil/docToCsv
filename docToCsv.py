@@ -14,7 +14,10 @@ from gooey import Gooey, GooeyParser
 ROOT = Path(__file__).parent.resolve()
 TMP_OUT = ROOT / 'tmp'
 
+global_file_counter = 0
+
 def extract_images(in_file: Path) -> None:
+    global global_file_counter
     if TMP_OUT.exists():
         shutil.rmtree(TMP_OUT)
 
@@ -28,7 +31,8 @@ def extract_images(in_file: Path) -> None:
             tmp_img = Image.open(io.BytesIO(img_data['image']))
             tmp_img = tmp_img.convert('L')
             tmp_img = tmp_img.rotate(-90, expand=True)
-            tmp_img.save(TMP_OUT / f'{img[0]}.png')
+            tmp_img.save(TMP_OUT / f'{global_file_counter}.png')
+            global_file_counter += 1
 
 def read_images() -> list[list[dict]]:
     import easyocr
