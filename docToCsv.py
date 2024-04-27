@@ -253,17 +253,24 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
     language="german",
     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
     progress_expr="current / total * 100",
-    menu=[{'name': 'Information', 'items': [{
-    'type': 'AboutDialog',
-    'menuTitle': 'Information',
-    'name': 'PDF2Excel',
-    'description': 'Eine einfache Methode für die Retourenlisten',
-    'version': '1.0',
-    'copyright': '2024',
-    'website': 'https://github.com/G4genteil/docToCsv',
-    'developer': 'Leon Schenzel + Daniel Mensinger',
-    'license': 'MIT'
-}]}])
+    menu=[
+        {
+            'name': 'Information', 'items': [
+                {
+                    'type': 'AboutDialog',
+                    'menuTitle': 'Information',
+                    'name': 'PDF2Excel',
+                    'description': 'Eine einfache Methode für die Retourenlisten',
+                    'version': '1.0',
+                    'copyright': '2024',
+                    'website': 'https://github.com/G4genteil/docToCsv',
+                    'developer': 'Leon Schenzel + Daniel Mensinger',
+                    'license': 'MIT',
+                }
+            ]
+        }
+    ]
+)
 
 def main() -> int:
     parser = GooeyParser(description="PDF2Excel")
