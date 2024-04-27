@@ -237,20 +237,22 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
             worksheet.write_row(curr_row, 0, [ret_nr, anmelde_datum, versandTag, mat_bez, anz_ret, retourengrund, kundennummer, kundenbez, ort, lieferTour, abholTour])
             curr_row += 1
 
-@Gooey
+@Gooey(language="german")
 def main() -> int:
     parser = GooeyParser(description="My Cool GUI Program!")
-    parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei', widget="FileChooser")
-    parser.add_argument('input', type=Path, help='Pfad zur input PDF Datei', widget="FileChooser")
+    parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei', widget="FileSaver")
+    parser.add_argument('input', type=Path, nargs="+", help='Pfad zur input PDF Datei', widget="MultiFileChooser")
 
     args = parser.parse_args()
 
-    in_file: Path = args.input
+    in_file_list: list[Path] = args.input
     out_file: Path = args.output
 
-    #extract_images(in_file)
-    #pages = read_images()
-    #pages = convert_data(pages)
+    for file in in_file_list:
+        extract_images(file)
+
+    pages = read_images()
+    pages = convert_data(pages)
     pages = json.loads((ROOT / 'data.json').read_text())
 
     workbook = xlsxwriter.Workbook(str(out_file))
