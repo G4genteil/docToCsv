@@ -276,7 +276,6 @@ def main() -> int:
     parser.add_argument('input', type=Path, nargs="+", help='Pfad zur input PDF Datei', widget="MultiFileChooser")
     parser.add_argument('--rotate', '-r', type=float, default=-90, help='Winkel um den die Bilder rotiert werden sollen')
     parser.add_argument('--only-extract', action='store_true', help='Nur die Bilder extrahieren, aber keine Tabelle generieren')
-    parser.add_argument('--max-pix-diff', type=int, default=32, help='Leon denk dir was aus :P')
 
     args = parser.parse_args()
 
@@ -284,7 +283,7 @@ def main() -> int:
     out_file: Path = args.output
     rotate: int = args.rotate
     only_extract: bool = args.only_extract
-    max_pix_diff: int = args.max_pix_diff
+    max_pix_diff: int = 32
 
     if not out_file.name.endswith('.xlsx'):
         out_file = out_file.with_suffix('.xlsx')
