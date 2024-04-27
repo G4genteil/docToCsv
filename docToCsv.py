@@ -9,6 +9,7 @@ from PIL import Image
 import json
 import io
 import xlsxwriter
+import re
 from gooey import Gooey, GooeyParser
 
 ROOT = Path(__file__).parent.resolve()
@@ -66,9 +67,10 @@ def convert_data(pages: list[list[list]]) -> list[list[dict[str]]]:
 
     return res
 
-def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
+def gen_csv(pages: list[list[dict[str]]], worksheet, max_pix_diff: int) -> None:
     curr_row = 1
-    for page in pages:
+    for idx, page in enumerate(pages):
+        print(f'\n\n\n\n\nBearbeite Bildaten von Bild {idx}.png')
 
         abholaddresse_pos = None
         mat_nr_pos = None
@@ -87,6 +89,8 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
         abholTour = None;
         abholTourGesehen = False;
 
+        page = [{'coords': x['coords'], 'text': re.sub(r'\s+\.', '.', x['text'])} for x in page]
+        page = [{'coords': x['coords'], 'text': re.sub(r'\s+:', ':', x['text'])} for x in page]
 
         for line in page:
             text: str = line['text']
@@ -162,10 +166,7 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
         print(f'liefertour:        {lieferTour}')
         print(f'abholtour:         {abholTour}')
 
-
-
-
-        abholaddresse_spalte = [x for x in page if abs(x['coords'][0] - abholaddresse_pos[0]) < 16]
+        abholaddresse_spalte = [x for x in page if abs(x['coords'][0] - abholaddresse_pos[0]) < max_pix_diff]
         abholaddresse_spalte = [x for x in abholaddresse_spalte if x['coords'][1] < retouren_nr_pos[1]]
         abholaddresse_spalte = sorted(abholaddresse_spalte, key=lambda x: x['coords'][1])
 
@@ -188,13 +189,13 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
         print(f'ort:               {ort}')
 
         # Parse Tabelle
-        tabelle = [x for x in page if x['coords'][1] > (mat_nr_pos[1] + 16)]
+        tabelle = [x for x in page if x['coords'][1] > (mat_nr_pos[1] + max_pix_diff)]
         tabelle_zeilen: list[list[dict[str]]] = []
 
         curr_y = tabelle[0]['coords'][1]
         curr_zeile = []
         for i in tabelle:
-            if abs(curr_y - i['coords'][1]) < 16:
+            if abs(curr_y - i['coords'][1]) < max_pix_diff:
                 curr_zeile += [i]
             else:
                 tabelle_zeilen += [curr_zeile]
@@ -218,10 +219,10 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
                 text: str = entry['text']
                 coords: list[int] = entry['coords']
 
-                if abs(coords[0] - mat_nr_pos[0]) < 16:
+                if abs(coords[0] - mat_nr_pos[0]) < max_pix_diff:
                     matnummer = text
                     line.remove(entry)
-                if abs(coords[0] - ret_grund_pos[0]) < 16:
+                if abs(coords[0] - ret_grund_pos[0]) < max_pix_diff:
                     retourengrund = text
                     line.remove(entry)
 
@@ -231,10 +232,10 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
 
                 dist_mat_bez = abs(coords[0] - mat_bez_pos[0])
                 dist_anz_ret = abs(coords[0] - anz_ret_pos[0])
-                if dist_mat_bez < mat_bez_best:
+                if dist_mat_bez < 200 and dist_mat_bez < mat_bez_best:
                     mat_bez = text
                     mat_bez_best = dist_mat_bez
-                if dist_anz_ret < anz_ret_best:
+                if dist_anz_ret < 200 and dist_anz_ret < anz_ret_best:
                     anz_ret = text
                     anz_ret_best = dist_anz_ret
 
@@ -273,8 +274,9 @@ def main() -> int:
     parser = GooeyParser(description="PDF2Excel")
     parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei', widget="FileSaver")
     parser.add_argument('input', type=Path, nargs="+", help='Pfad zur input PDF Datei', widget="MultiFileChooser")
-    parser.add_argument('--rotate', '-r', type=int, default=-90, help='Winkel um den die Bilder rotiert werden sollen')
+    parser.add_argument('--rotate', '-r', type=float, default=-90, help='Winkel um den die Bilder rotiert werden sollen')
     parser.add_argument('--only-extract', action='store_true', help='Nur die Bilder extrahieren, aber keine Tabelle generieren')
+    parser.add_argument('--max-pix-diff', type=int, default=32, help='Leon denk dir was aus :P')
 
     args = parser.parse_args()
 
@@ -282,6 +284,7 @@ def main() -> int:
     out_file: Path = args.output
     rotate: int = args.rotate
     only_extract: bool = args.only_extract
+    max_pix_diff: int = args.max_pix_diff
 
     if not out_file.name.endswith('.xlsx'):
         out_file = out_file.with_suffix('.xlsx')
@@ -300,6 +303,7 @@ def main() -> int:
 
     pages = read_images()
     pages = convert_data(pages)
+    (ROOT / 'data.json').write_text(json.dumps(pages, indent=2))
     #pages = json.loads((ROOT / 'data.json').read_text())
 
     workbook = xlsxwriter.Workbook(str(out_file))
@@ -310,7 +314,7 @@ def main() -> int:
 
     worksheet.set_column(0, 10, 20, cell_format=cell_format)
     worksheet.write_row(0, 0, ["Retouren Nr.", "Anmeldung Datum", "Versandtag", "Kurzbezeichnung", "Anzahl Retouren", "Retourengrund", "Kunde Nr.", "Name", "Ort", "Liefertour", "Abholtour"])
-    gen_csv(pages, worksheet)
+    gen_csv(pages, worksheet, max_pix_diff)
     workbook.close()
 
 
