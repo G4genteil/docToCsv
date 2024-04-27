@@ -26,6 +26,7 @@ def extract_images(in_file: Path) -> None:
             img_data = pdf.extract_image(img[0])
 
             tmp_img = Image.open(io.BytesIO(img_data['image']))
+            tmp_img = tmp_img.convert('L')
             tmp_img = tmp_img.rotate(-90, expand=True)
             tmp_img.save(TMP_OUT / f'{img[0]}.png')
 
