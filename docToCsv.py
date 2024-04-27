@@ -49,7 +49,6 @@ def read_images() -> list[list[dict]]:
 
     print(f'progress: {len(image_files)}/{len(image_files)}')
 
-    pprint(res)
     return res
 
 def convert_data(pages: list[list[list]]) -> list[list[dict[str]]]:
@@ -65,7 +64,6 @@ def convert_data(pages: list[list[list]]) -> list[list[dict[str]]]:
 
         res += [page_conv]
 
-    pprint(res)
     return res
 
 def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
@@ -271,7 +269,6 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
         }
     ]
 )
-
 def main() -> int:
     parser = GooeyParser(description="PDF2Excel")
     parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei', widget="FileSaver")
@@ -281,6 +278,8 @@ def main() -> int:
 
     in_file_list: list[Path] = args.input
     out_file: Path = args.output
+    if not out_file.name.endswith('.xlsx'):
+        out_file = out_file.with_suffix('.xlsx')
 
     if TMP_OUT.exists():
         shutil.rmtree(TMP_OUT)
