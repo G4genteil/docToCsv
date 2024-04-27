@@ -249,15 +249,24 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
             worksheet.write_row(curr_row, 0, [ret_nr, anmelde_datum, versandTag, mat_bez, anz_ret, retourengrund, kundennummer, kundenbez, ort, lieferTour, abholTour])
             curr_row += 1
 
-"""
 @Gooey(
     language="german",
     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
     progress_expr="current / total * 100",
-)
-"""
+    menu=[{'name': 'Information', 'items': [{
+    'type': 'AboutDialog',
+    'menuTitle': 'Information',
+    'name': 'PDF2Excel',
+    'description': 'Eine einfache Methode für die Retourenlisten',
+    'version': '1.0',
+    'copyright': '2024',
+    'website': 'https://github.com/G4genteil/docToCsv',
+    'developer': 'Leon Schenzel + Daniel Mensinger',
+    'license': 'MIT'
+}]}])
+
 def main() -> int:
-    parser = GooeyParser(description="My Cool GUI Program!")
+    parser = GooeyParser(description="PDF2Excel")
     parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei', widget="FileSaver")
     parser.add_argument('input', type=Path, nargs="+", help='Pfad zur input PDF Datei', widget="MultiFileChooser")
 
@@ -281,7 +290,10 @@ def main() -> int:
     workbook = xlsxwriter.Workbook(str(out_file))
     worksheet = workbook.add_worksheet()
 
-    worksheet.set_column(0, 10, 20)
+    cell_format = workbook.add_format()
+    cell_format.set_border(1)
+
+    worksheet.set_column(0, 10, 20, cell_format=cell_format)
     worksheet.write_row(0, 0, ["Retouren Nr.", "Anmeldung Datum", "Versandtag", "Kurzbezeichnung", "Anzahl Retouren", "Retourengrund", "Kunde Nr.", "Name", "Ort", "Liefertour", "Abholtour"])
     gen_csv(pages, worksheet)
     workbook.close()
