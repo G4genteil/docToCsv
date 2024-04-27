@@ -8,6 +8,7 @@ import shutil
 from PIL import Image
 import json
 import io
+import csv
 
 from pprint import pprint
 
@@ -56,7 +57,7 @@ def convert_data(pages: list[list[list]]) -> list[list[dict[str]]]:
 
     return res
 
-def gen_csv(pages: list[list[dict[str]]]) -> None:
+def gen_csv(pages: list[list[dict[str]]], writer) -> None:
     for page in pages:
 
         abholaddresse_pos = None
@@ -232,20 +233,28 @@ def gen_csv(pages: list[list[dict[str]]]) -> None:
             print(f' - mat. bez.:      {mat_bez} -- [{mat_bez_best}]')
             print(f' - anzahl ret.:    {anz_ret} -- [{anz_ret_best}]')
 
+            writer.writerow([ret_nr, anmelde_datum, versandTag, mat_bez, anz_ret, retourengrund, kundennummer, kundenbez, ort, lieferTour, abholTour])
+
 
 def main() -> int:
     parser = AP.ArgumentParser('Doc To CSV')
+    parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei')
     parser.add_argument('input', type=Path, help='Pfad zur input PDF Datei')
 
     args = parser.parse_args()
 
     in_file: Path = args.input
+    out_file: Path = args.output
 
     #extract_images(in_file)
     #pages = read_images()
     #pages = convert_data(pages)
     pages = json.loads((ROOT / 'data.json').read_text())
-    gen_csv(pages)
+
+    with open(out_file, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(["Retouren Nr.", "Anmeldung Datum", "Versandtag", "Kurzbezeichnung", "Anzahl Retouren", "Retourengrund", "Kunde Nr.", "Name", "Ort", "Liefertour", "Abholtour"])
+        gen_csv(pages, writer)
 
 
 if __name__ == '__main__':
