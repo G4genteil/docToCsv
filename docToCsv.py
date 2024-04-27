@@ -16,12 +16,11 @@ TMP_OUT = ROOT / 'tmp'
 
 global_file_counter = 0
 
-def extract_images(in_file: Path) -> None:
-    global global_file_counter
-    if TMP_OUT.exists():
-        shutil.rmtree(TMP_OUT)
+from pprint import pprint
 
-    TMP_OUT.mkdir(parents=True)
+def extract_images(in_file: Path) -> None:
+    print(f'Extrahiere Bilder aus PDF: {in_file}')
+    global global_file_counter
 
     pdf = fitz.open(in_file)
     for page in pdf:
@@ -35,13 +34,22 @@ def extract_images(in_file: Path) -> None:
             global_file_counter += 1
 
 def read_images() -> list[list[dict]]:
+    print('Lade easyocr...')
+
     import easyocr
     reader = easyocr.Reader(['de']) # this needs to run only once to load the model into memory
 
+    print('Erkenne texte in den Bildern...')
+
     res = []
-    for img in TMP_OUT.glob("*"):
+    image_files = list(TMP_OUT.glob("*"))
+    for idx, img in enumerate(image_files):
+        print(f'progress: {idx}/{len(image_files)}')
         res += [reader.readtext(str(img), paragraph=False, canvas_size=3200)]
 
+    print(f'progress: {len(image_files)}/{len(image_files)}')
+
+    pprint(res)
     return res
 
 def convert_data(pages: list[list[list]]) -> list[list[dict[str]]]:
@@ -54,10 +62,10 @@ def convert_data(pages: list[list[list]]) -> list[list[dict[str]]]:
                 'text': line[1],
             }
             page_conv += [data]
-            #print(json.dumps(data) + ',')
 
         res += [page_conv]
 
+    pprint(res)
     return res
 
 def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
@@ -241,7 +249,13 @@ def gen_csv(pages: list[list[dict[str]]], worksheet) -> None:
             worksheet.write_row(curr_row, 0, [ret_nr, anmelde_datum, versandTag, mat_bez, anz_ret, retourengrund, kundennummer, kundenbez, ort, lieferTour, abholTour])
             curr_row += 1
 
-@Gooey(language="german")
+"""
+@Gooey(
+    language="german",
+    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+    progress_expr="current / total * 100",
+)
+"""
 def main() -> int:
     parser = GooeyParser(description="My Cool GUI Program!")
     parser.add_argument('output', type=Path, help='Pfad zur Ausgabe CSV Datei', widget="FileSaver")
@@ -252,12 +266,17 @@ def main() -> int:
     in_file_list: list[Path] = args.input
     out_file: Path = args.output
 
+    if TMP_OUT.exists():
+        shutil.rmtree(TMP_OUT)
+
+    TMP_OUT.mkdir(parents=True)
+
     for file in in_file_list:
         extract_images(file)
 
     pages = read_images()
     pages = convert_data(pages)
-    pages = json.loads((ROOT / 'data.json').read_text())
+    #pages = json.loads((ROOT / 'data.json').read_text())
 
     workbook = xlsxwriter.Workbook(str(out_file))
     worksheet = workbook.add_worksheet()
